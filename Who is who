@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>¿Quién es Quién?</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:      #05060f;
+  --s1:      rgba(255,255,255,0.05);
+  --s2:      rgba(255,255,255,0.09);
+  --border:  rgba(255,255,255,0.1);
+  --pink:    #ff2d78;
+  --cyan:    #00e5ff;
+  --yellow:  #ffe135;
+  --purple:  #9b59ff;
+  --text:    #f0f2ff;
+  --muted:   rgba(240,242,255,0.45);
+  --r:       18px;
+  --r-sm:    12px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── FONDO VIVO ── */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 70% 55% at 15% 15%, rgba(255,45,120,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 85% 85%, rgba(0,229,255,0.15) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 40% at 50% 50%, rgba(155,89,255,0.1) 0%, transparent 60%);
+  pointer-events:none;
+  z-index:0;
+  animation:bgPulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes bgPulse {
+  0%   {opacity:1; transform:scale(1)}
+  100% {opacity:.75; transform:scale(1.06)}
+}
+
+/* Partículas decorativas */
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+  z-index:0;
+}
+
+.container {
+  position:relative;
+  z-index:1;
+  max-width:1020px;
+  margin:0 auto;
+  padding:28px 18px 40px;
+}
+
+/* ── TÍTULO ÉPICO ── */
+.hero {
+  text-align:center;
+  margin-bottom:28px;
+  position:relative;
+}
+
+.hero-eyebrow {
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--cyan);
+  margin-bottom:10px;
+  opacity:.8;
+}
+
+h1 {
+  font-family:'Black Han Sans', sans-serif;
+  font-size:clamp(38px, 10vw, 72px);
+  line-height:.95;
+  letter-spacing:-1px;
+  position:relative;
+  display:inline-block;
+}
+
+/* Texto con gradiente multicapa */
+.h1-line1 {
+  display:block;
+  background:linear-gradient(90deg, #fff 0%, var(--cyan) 60%, #fff 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  background-size:200% auto;
+  animation:shine 4s linear infinite;
+}
+
+.h1-line2 {
+  display:block;
+  background:linear-gradient(90deg, var(--pink) 0%, var(--yellow) 50%, var(--pink) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  background-size:200% auto;
+  animation:shine 4s linear infinite reverse;
+  text-shadow:none;
+}
+
+@keyframes shine {
+  0%   {background-position:0% center}
+  100% {background-position:200% center}
+}
+
+/* Línea decorativa debajo del título */
+.hero-line {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-top:14px;
+}
+.hero-dash {
+  height:2px;
+  width:40px;
+  background:linear-gradient(90deg, transparent, var(--pink));
+  border-radius:99px;
+}
+.hero-dash.r {
+  background:linear-gradient(90deg, var(--cyan), transparent);
+}
+.hero-dot {
+  width:6px; height:6px;
+  border-radius:50%;
+  background:var(--yellow);
+  box-shadow:0 0 8px var(--yellow);
+  animation:dotBlink 1.5s ease-in-out infinite;
+}
+@keyframes dotBlink {
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.4;transform:scale(.7)}
+}
+
+/* ── PANEL GLASS ── */
+.panel {
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:22px 20px;
+  margin-bottom:12px;
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  box-shadow:0 8px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.07);
+  animation:fadeUp .4s ease both;
+}
+
+@keyframes fadeUp {
+  from{opacity:0;transform:translateY(16px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+
+/* ── UPLOAD ── */
+.upload-zone {
+  border:2px dashed rgba(255,45,120,.35);
+  border-radius:var(--r-sm);
+  padding:30px 20px;
+  cursor:pointer;
+  transition:all .25s;
+  background:rgba(255,45,120,.04);
+  text-align:center;
+}
+.upload-zone:hover {
+  border-color:var(--pink);
+  background:rgba(255,45,120,.09);
+  box-shadow:0 0 30px rgba(255,45,120,.15);
+}
+.upload-icon{font-size:34px;margin-bottom:10px}
+.upload-zone strong{font-size:16px;color:var(--text)}
+.upload-zone p{color:var(--muted);font-size:13px;margin-top:5px}
+
+.file-count {
+  display:inline-block;
+  margin-top:14px;
+  font-size:13px;
+  color:var(--cyan);
+  font-weight:700;
+  background:rgba(0,229,255,.08);
+  padding:4px 16px;
+  border-radius:99px;
+  border:1px solid rgba(0,229,255,.2);
+}
+
+/* ── BOTONES ── */
+.btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:13px 26px;
+  border:none;
+  border-radius:var(--r-sm);
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+  touch-action:manipulation;
+  position:relative;
+  overflow:hidden;
+  letter-spacing:.3px;
+}
+.btn::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:white;
+  opacity:0;
+  transition:opacity .15s;
+  pointer-events:none;
+}
+.btn:active::after{opacity:.1}
+.btn:hover {transform:translateY(-2px)}
+.btn:active{transform:scale(.97)}
+
+.btn-primary {
+  background:linear-gradient(135deg, var(--pink), #c4006a);
+  color:white;
+  box-shadow:0 4px 22px rgba(255,45,120,.4);
+}
+.btn-primary:hover{box-shadow:0 8px 32px rgba(255,45,120,.55)}
+
+.btn-secondary {
+  background:var(--s2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-secondary:hover{background:rgba(255,255,255,.13)}
+
+.btn-cyan {
+  background:linear-gradient(135deg, var(--cyan), #0099b8);
+  color:#001820;
+  box-shadow:0 4px 22px rgba(0,229,255,.3);
+  font-weight:800;
+}
+.btn-cyan:hover{box-shadow:0 8px 32px rgba(0,229,255,.5)}
+
+.btn-danger {
+  background:linear-gradient(135deg, #ff4444, #a00000);
+  color:white;
+  box-shadow:0 4px 22px rgba(255,68,68,.3);
+}
+.btn-danger:hover{box-shadow:0 8px 28px rgba(255,68,68,.5)}
+
+.btn-success {
+  background:linear-gradient(135deg, #00e676, #00695c);
+  color:#001a10;
+  box-shadow:0 4px 22px rgba(0,230,118,.3);
+  font-weight:800;
+}
+.btn-success:hover{box-shadow:0 8px 28px rgba(0,230,118,.5)}
+
+.btn-row {
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+
+/* ── MODE CARDS ── */
+.panel-title {
+  font-family:'Black Han Sans',sans-serif;
+  font-size:13px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:14px;
+  text-align:center;
+}
+
+.mode-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.mode-card {
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  padding:22px 14px;
+  cursor:pointer;
+  transition:all .25s;
+  touch-action:manipulation;
+  user-select:none;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.mode-card::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transition:opacity .25s;
+}
+.mode-card:nth-child(1)::before { background:radial-gradient(circle at 50% 50%, rgba(255,45,120,.15), transparent 70%); }
+.mode-card:nth-child(2)::before { background:radial-gradient(circle at 50% 50%, rgba(0,229,255,.15), transparent 70%); }
+.mode-card:hover::before { opacity:1; }
+.mode-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+}
+.mode-card:hover:nth-child(1){border-color:var(--pink)}
+.mode-card:hover:nth-child(2){border-color:var(--cyan)}
+.mode-card:active{transform:scale(.97)}
+
+.mode-icon  {font-size:28px;margin-bottom:8px}
+.mode-label {font-family:'Black Han Sans',sans-serif;font-size:16px;letter-spacing:.5px}
+.mode-desc  {font-size:12px;color:var(--muted);margin-top:5px}
+
+/* ── CONTROLS ── */
+#controls {
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+/* ── RIVAL CARD ── */
+#rivalCard {
+  display:flex;
+  align-items:center;
+  gap:16px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Acento lateral de color */
+#rivalCard::before {
+  content:'';
+  position:absolute;
+  left:0; top:0; bottom:0;
+  width:3px;
+  background:linear-gradient(180deg, var(--cyan), var(--pink));
+  border-radius:99px;
+}
+
+.rival-info{text-align:left;padding-left:4px}
+
+.rival-label {
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  color:var(--cyan);
+  margin-bottom:5px;
+}
+.rival-name{font-family:'Black Han Sans',sans-serif;font-size:15px;letter-spacing:.5px}
+.rival-hint{font-size:12px;color:var(--muted);margin-top:4px}
+
+#rivalImage {
+  width:74px;
+  height:74px;
+  object-fit:cover;
+  border-radius:14px;
+  border:2px solid var(--cyan);
+  box-shadow:0 0 22px rgba(0,229,255,.35);
+  flex-shrink:0;
+}
+
+/* ── BOARD ── */
+#board {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:12px;
+}
+
+/* ── CARD ── */
+.card {
+  border-radius:14px;
+  cursor:pointer;
+  position:relative;
+  transition:transform .2s, box-shadow .2s, border-color .2s;
+  touch-action:manipulation;
+  user-select:none;
+  -webkit-user-select:none;
+  overflow:hidden;
+  background:var(--s2);
+  border:1px solid var(--border);
+  box-shadow:0 4px 14px rgba(0,0,0,.35);
+}
+
+.card:hover {
+  transform:translateY(-5px) scale(1.03);
+  box-shadow:0 16px 36px rgba(0,0,0,.55);
+  border-color:rgba(255,255,255,.2);
+}
+.card:active{transform:scale(.95)}
+
+.card img {
+  width:100%;
+  height:140px;
+  object-fit:cover;
+  display:block;
+  pointer-events:none;
+  -webkit-user-drag:none;
+  transition:filter .35s, opacity .35s;
+}
+
+.card.eliminated{border-color:rgba(255,68,68,.2)}
+.card.eliminated img{filter:grayscale(100%) brightness(.4);opacity:.45}
+
+.xMark {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:56px;
+  font-weight:900;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .25s;
+  background:rgba(140,0,0,.15);
+  color:#ff3333;
+  text-shadow:0 0 20px rgba(255,0,0,.5);
+}
+.card.eliminated .xMark{opacity:1}
+
+/* Pulso de adivinanza — neón cyan */
+.card.guessable {
+  border-color:var(--cyan);
+  box-shadow:0 0 16px rgba(0,229,255,.4);
+  animation:guessGlow 1.4s ease-in-out infinite;
+}
+@keyframes guessGlow {
+  0%,100%{box-shadow:0 0 12px rgba(0,229,255,.35)}
+  50%    {box-shadow:0 0 30px rgba(0,229,255,.7), 0 0 60px rgba(0,229,255,.2)}
+}
+
+/* ── GUESS OVERLAY ── */
+#guessOverlay {
+  position:fixed;
+  inset:0;
+  background:rgba(5,6,15,.92);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  gap:16px;
+  z-index:200;
+  padding:30px;
+  text-align:center;
+  animation:fadeIn .2s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* Marco neón en la imagen del overlay */
+#guessOverlay img {
+  width:min(260px,70vw);
+  border-radius:20px;
+  border:2px solid var(--cyan);
+  box-shadow:0 0 40px rgba(0,229,255,.3), 0 20px 60px rgba(0,0,0,.6);
+}
+
+#guessOverlay h2 {
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(20px,5vw,28px);
+  letter-spacing:.5px;
+  background:linear-gradient(90deg, var(--text), var(--cyan));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.overlay-subtitle{font-size:13px;color:var(--muted)}
+
+/* ── END SCREEN ── */
+#endScreen {
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  gap:12px;
+  z-index:300;
+  padding:30px;
+  text-align:center;
+}
+
+.end-icon{font-size:80px;animation:bounceIn .55s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes bounceIn {
+  0%  {transform:scale(0) rotate(-15deg);opacity:0}
+  60% {transform:scale(1.3) rotate(4deg);opacity:1}
+  100%{transform:scale(1) rotate(0)}
+}
+
+.end-title {
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(36px,10vw,64px);
+  letter-spacing:-1px;
+  line-height:1;
+}
+
+.end-sub{font-size:15px;opacity:.65}
+
+/* Fondos de victoria/derrota más dramáticos */
+.victory {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0,230,118,.2) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 80%, rgba(0,229,255,.1) 0%, transparent 60%),
+    var(--bg);
+}
+.victory .end-title {
+  background:linear-gradient(135deg, #00e676, #00e5ff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.defeat {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255,45,120,.2) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 80%, rgba(120,0,0,.15) 0%, transparent 60%),
+    var(--bg);
+}
+.defeat .end-title {
+  background:linear-gradient(135deg, var(--pink), #ff8800);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.hidden{display:none !important}
+
+/* ── TOAST ── */
+.toast {
+  position:fixed;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.14);
+  color:white;
+  padding:12px 24px;
+  border-radius:99px;
+  font-size:14px;
+  font-weight:600;
+  z-index:999;
+  white-space:nowrap;
+  pointer-events:none;
+  animation:fadeUp .3s ease;
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
+}
+
+/* ── MOBILE ── */
+@media (max-width:600px){
+  .container{padding:16px 12px 100px}
+  .hero{margin-bottom:18px}
+
+  #board{grid-template-columns:repeat(3,1fr);gap:8px}
+  .card img{height:90px}
+  .xMark{font-size:40px}
+
+  #controls {
+    position:fixed;
+    bottom:0;left:0;
+    width:100%;
+    background:rgba(5,6,15,.97);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border-top:1px solid var(--border);
+    border-radius:20px 20px 0 0;
+    padding:12px 16px;
+    z-index:100;
+    box-shadow:0 -8px 32px rgba(0,0,0,.5);
+    gap:8px;
+  }
+  #controls .btn{flex:1;padding:14px 8px;font-size:13px}
+  #controls.hidden{display:none !important}
+
+  #rivalCard{gap:14px}
+  #rivalImage{width:60px;height:60px;border-radius:12px}
+
+  .mode-grid{gap:10px}
+  .mode-card{padding:16px 10px}
+
+  .upload-zone{padding:22px 14px}
+  .toast{bottom:90px;font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- TÍTULO -->
+  <div class="hero">
+    <div class="hero-eyebrow">🎮 El juego de</div>
+    <h1>
+      <span class="h1-line1">¿QUIÉN</span>
+      <span class="h1-line2">ES QUIÉN?</span>
+    </h1>
+    <div class="hero-line">
+      <div class="hero-dash"></div>
+      <div class="hero-dot"></div>
+      <div class="hero-dash r"></div>
+    </div>
+  </div>
+
+  <!-- CARGA -->
+  <div id="loadSection" class="panel">
+    <input type="file" id="imageUpload" multiple accept="image/*" class="hidden">
+    <div class="upload-zone" onclick="document.getElementById('imageUpload').click()">
+      <div class="upload-icon">🖼️</div>
+      <strong>Subir personajes</strong>
+      <p>Tocá para seleccionar tus imágenes</p>
+    </div>
+    <div id="fileCountWrap" class="hidden" style="text-align:center;margin-top:14px">
+      <span class="file-count" id="fileCountText"></span>
+    </div>
+    <div class="btn-row">
+      <button id="startGameBtn" class="btn btn-primary hidden" onclick="showModeSelection()">
+        ▶&nbsp; Empezar partida
+      </button>
+    </div>
+  </div>
+
+  <!-- MODO -->
+  <div id="modeSection" class="panel hidden">
+    <div class="panel-title">Elegir carta secreta</div>
+    <div class="mode-grid">
+      <div class="mode-card" onclick="startRandom()">
+        <div class="mode-icon">🎲</div>
+        <div class="mode-label">Aleatoria</div>
+        <div class="mode-desc">El juego elige por vos</div>
+      </div>
+      <div class="mode-card" onclick="startManual()">
+        <div class="mode-icon">👆</div>
+        <div class="mode-label">Manual</div>
+        <div class="mode-desc">Vos elegís tu carta</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLES -->
+  <div id="controls" class="panel hidden">
+    <button id="guessBtn" class="btn btn-cyan" onclick="activateGuessMode()">🎯&nbsp; Adivinar</button>
+    <button id="restartBtn" class="btn btn-secondary" onclick="showRestartOptions()">↺&nbsp; Reiniciar</button>
+  </div>
+
+  <!-- CARTA SECRETA -->
+  <div id="rivalCard" class="panel hidden">
+    <img id="rivalImage" src="">
+    <div class="rival-info">
+      <div class="rival-label">Tu carta secreta</div>
+      <div class="rival-name">El rival tiene que adivinar esta</div>
+      <div class="rival-hint">Guardá el secreto 🤫</div>
+    </div>
+  </div>
+
+  <!-- TABLERO -->
+  <div id="board"></div>
+
+</div>
+
+<!-- OVERLAY ADIVINAR -->
+<div id="guessOverlay">
+  <img id="guessImage" src="">
+  <h2>¿Es este el personaje?</h2>
+  <p class="overlay-subtitle">Confirmá con tu rival por Discord</p>
+  <div class="btn-row">
+    <button class="btn btn-success" onclick="confirmYes()">✓&nbsp; Sí, es este</button>
+    <button class="btn btn-danger"  onclick="confirmNo()">✗&nbsp; No es este</button>
+  </div>
+</div>
+
+<!-- PANTALLA FINAL -->
+<div id="endScreen"></div>
+
+<script>
+let characters        = [];
+let rivalSecret       = null;
+let guessMode         = false;
+let gameEnded         = false;
+let idCounter         = 0;
+let selectedGuessChar = null;
+let selectingRival    = false;
+
+const restartBtn = document.getElementById("restartBtn");
+const guessBtn   = document.getElementById("guessBtn");
+
+document.getElementById("imageUpload").addEventListener("change", function(e){
+  const files = e.target.files;
+  if(!files.length) return;
+  characters = new Array(files.length);
+  idCounter  = 0;
+  let loaded = 0;
+  for(let i = 0; i < files.length; i++){
+    const index  = i;
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      characters[index] = { id:index, img:ev.target.result };
+      loaded++;
+      if(loaded === files.length){
+        idCounter = files.length;
+        createBoard();
+        document.getElementById("startGameBtn").classList.remove("hidden");
+        document.getElementById("fileCountWrap").classList.remove("hidden");
+        document.getElementById("fileCountText").textContent =
+          `${files.length} personaje${files.length!==1?'s':''} cargado${files.length!==1?'s':''} ✓`;
+      }
+    };
+    reader.readAsDataURL(files[i]);
+  }
+});
+
+function createBoard(){
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+  characters.forEach(char => {
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.dataset.id = char.id;
+    card.innerHTML  = `<img src="${char.img}"><div class="xMark">✕</div>`;
+    card.addEventListener("click", function(){
+      if(gameEnded) return;
+      if(selectingRival){
+        rivalSecret    = characters.find(c => c.id === parseInt(card.dataset.id));
+        selectingRival = false;
+        createBoard();
+        finishMode();
+        return;
+      }
+      if(guessMode){
+        if(card.classList.contains("eliminated")) return;
+        selectedGuessChar = char;
+        document.getElementById("guessImage").src = char.img;
+        document.getElementById("guessOverlay").style.display = "flex";
+      } else {
+        card.classList.toggle("eliminated");
+      }
+    });
+    board.appendChild(card);
+  });
+}
+
+function showModeSelection(){
+  document.getElementById("loadSection").classList.add("hidden");
+  document.getElementById("modeSection").classList.remove("hidden");
+}
+
+function startRandom(){
+  rivalSecret = characters[Math.floor(Math.random()*characters.length)];
+  finishMode();
+}
+
+function startManual(){
+  selectingRival = true;
+  document.getElementById("modeSection").classList.add("hidden");
+  showToast("👆 Tocá la carta que será tu secreto");
+}
+
+function finishMode(){
+  document.getElementById("modeSection").classList.add("hidden");
+  document.getElementById("controls").classList.remove("hidden");
+  document.getElementById("rivalCard").classList.remove("hidden");
+  document.getElementById("rivalImage").src = rivalSecret.img;
+}
+
+function activateGuessMode(){
+  guessMode = true;
+  document.querySelectorAll(".card").forEach(card => {
+    if(!card.classList.contains("eliminated")) card.classList.add("guessable");
+  });
+}
+
+function confirmYes(){
+  document.getElementById("guessOverlay").style.display = "none";
+  guessMode = false;
+  removeGuessable();
+  endGame("victory");
+}
+
+function confirmNo(){
+  document.getElementById("guessOverlay").style.display = "none";
+  const card = document.querySelector(`.card[data-id='${selectedGuessChar?selectedGuessChar.id:-1}']`);
+  if(card) card.classList.add("eliminated");
+  const remaining = document.querySelectorAll(".card:not(.eliminated)").length;
+  if(remaining === 0) endGame("defeat");
+  guessMode = false;
+  removeGuessable();
+}
+
+function removeGuessable(){
+  document.querySelectorAll(".card").forEach(c => c.classList.remove("guessable"));
+}
+
+function endGame(type){
+  gameEnded = true;
+  const isVictory = type === "victory";
+  const end = document.getElementById("endScreen");
+  end.innerHTML = `
+    <div class="end-icon">${isVictory?"🏆":"💀"}</div>
+    <div class="end-title">${isVictory?"¡GANASTE!":"PERDISTE"}</div>
+    <div class="end-sub">${isVictory?"El rival no pudo con vos 🔥":"Mejor suerte la próxima vez"}</div>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn btn-primary"   onclick="restartRound()">↺&nbsp; Nueva ronda</button>
+      <button class="btn btn-secondary" onclick="restartAll()">⟳&nbsp; Reiniciar todo</button>
+    </div>
+  `;
+  end.className     = type;
+  end.style.display = "flex";
+}
+
+function showRestartOptions(){
+  restartBtn.innerHTML = "↺&nbsp; Nueva ronda";
+  restartBtn.onclick   = restartRound;
+  guessBtn.innerHTML   = "⟳&nbsp; Reiniciar todo";
+  guessBtn.className   = "btn btn-secondary";
+  guessBtn.onclick     = restartAll;
+}
+
+function restartRound(){
+  gameEnded=false; guessMode=false; selectingRival=false;
+  selectedGuessChar=null; rivalSecret=null;
+  document.querySelectorAll(".card").forEach(c=>c.classList.remove("eliminated","guessable"));
+  document.getElementById("rivalCard").classList.add("hidden");
+  document.getElementById("controls").classList.add("hidden");
+  document.getElementById("modeSection").classList.remove("hidden");
+  document.getElementById("endScreen").style.display="none";
+  restartBtn.innerHTML="↺&nbsp; Reiniciar";
+  restartBtn.onclick=showRestartOptions;
+  guessBtn.innerHTML="🎯&nbsp; Adivinar";
+  guessBtn.className="btn btn-cyan";
+  guessBtn.onclick=activateGuessMode;
+}
+
+function restartAll(){ location.reload(); }
+
+function showToast(msg){
+  const t=document.createElement("div");
+  t.className="toast"; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s"},2700);
+  setTimeout(()=>t.remove(),3000);
+}
+</script>
+</body>
+</html>
